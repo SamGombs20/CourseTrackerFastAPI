@@ -57,6 +57,11 @@ async def root():
 # @app.get("/load")
 # async def load():
 #     return {"courses":courses}
+@app.get("/courses",response_model=List[CourseRead])
+async def get_courses(session:AsyncSession=Depends(get_session)):
+    result = await session.execute(select(Course))
+    courses = result.scalars().all()
+    return courses
 @app.post("/addCourse", response_model=CourseRead, status_code=status.HTTP_201_CREATED)
 async def create_course(course_in:CourseCreate, session:AsyncSession=Depends(get_session)):
     result = await session.execute(select(Course).where(Course.name ==course_in.name))
