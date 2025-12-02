@@ -46,7 +46,6 @@ courses:List[Course] =[]
 @app.get("/")
 async def root():
     return {"message":"Course tracker backend running!"}
-
 @app.post("/save")
 async def save(payload:SavePayload):
     global courses
