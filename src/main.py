@@ -85,7 +85,7 @@ async def create_course(course_in:CourseCreate, session:AsyncSession=Depends(get
     await session.commit()
     await session.refresh(course)
     return course
-@app.post("/updateCourse/{course_id}", response_model=CourseRead)
+@app.put("/updateCourse/{course_id}", response_model=CourseRead)
 async def update_course(course_id:str, course_in:CourseCreate, session:AsyncSession= Depends(get_session)):
     result = await session.execute(select(Course).where(Course.id == course_id))
     course = result.scalars().first()
@@ -104,7 +104,7 @@ async def update_course(course_id:str, course_in:CourseCreate, session:AsyncSess
     await session.commit()
     await session.refresh(course)
     return course
-@app.post("/deleteCourse/{course_id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/deleteCourse/{course_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_course(course_id:str, session:AsyncSession=Depends(get_session)):
     result = await session.execute(select(Course).where(Course.id == course_id))
     course = result.scalars().first()
