@@ -67,11 +67,7 @@ async def get_courses(session:AsyncSession=Depends(get_session)):
     return courses
 @app.post("/addCourse", response_model=CourseRead, status_code=status.HTTP_201_CREATED)
 async def create_course(course_in:CourseCreate, session:AsyncSession=Depends(get_session)):
-    result = await session.execute(select(Course).where(Course.name ==course_in.name))
-
-    if result.scalars().first():
-        raise HTTPException(status_code=400, detail="Course already exists")
-    
+   
     course = Course(
         name=course_in.name,
         category=course_in.category,
