@@ -17,7 +17,7 @@ class CourseBase(SQLModel):
 class Course(CourseBase, table=True):
     __tablename__ = "courses"
 
-    id: str = Field(
+    id: UUID = Field(
         default_factory=uuid4,
         primary_key=True,
         nullable=False
