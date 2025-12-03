@@ -14,12 +14,12 @@ from model.course import Course, CourseCreate, CourseRead
 from model.user import User, UserCreate, UserRead
 from database import get_session, init_db
 
-@asynccontextmanager
-async def lifespan(app:FastAPI):
-    await init_db()
-    yield
+# @asynccontextmanager
+# async def lifespan(app:FastAPI):
+#     await init_db()
+#     yield
 
-app = FastAPI(lifespan=lifespan, title="Course Tracker API")
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,6 +27,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+
 )
 
 # class Course(BaseModel):
@@ -42,7 +43,9 @@ app.add_middleware(
 #     courses:List[Course]
 
 # courses:List[Course] =[]
-
+@app.on_event("startup")
+async def start_up():
+    await init_db()
 
 @app.get("/")
 async def root():
