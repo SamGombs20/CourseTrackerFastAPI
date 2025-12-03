@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import List
 from uuid import uuid4
 from fastapi import Depends, FastAPI, status, HTTPException
 from fastapi.concurrency import asynccontextmanager
@@ -85,6 +85,35 @@ async def create_course(course_in:CourseCreate, session:AsyncSession=Depends(get
     await session.commit()
     await session.refresh(course)
     return course
+@app.post("/updateCourse/{course_id}", response_model=CourseRead)
+async def update_course(course_id:str, course_in:CourseCreate, session:AsyncSession= Depends(get_session)):
+    result = await session.execute(select(Course).where(Course.id == course_id))
+    course = result.scalars().first()
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+    
+    course.name = course_in.name
+    course.category = course_in.category
+    course.description = course_in.description
+    course.status = course_in.status
+    course.startDate = course_in.startDate
+    course.endDate = course_in.endDate
+    course.rating = course_in.rating
+
+    session.add(course)
+    await session.commit()
+    await session.refresh(course)
+    return course
+@app.post("/deleteCourse/{course_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_course(course_id:str, session:AsyncSession=Depends(get_session)):
+    result = await session.execute(select(Course).where(Course.id == course_id))
+    course = result.scalars().first()
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+    
+    await session.delete(course)
+    await session.commit()
+    return
 @app.post("/addUser", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 async def create_user(user_in: UserCreate, session: AsyncSession = Depends(get_session)):
 
