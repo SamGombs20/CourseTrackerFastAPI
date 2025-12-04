@@ -8,7 +8,7 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from auth.utils import get_password_hash
 from core.config import settings
-from routers.auth import router
+from routers import auth, users
 
 
 import uvicorn
@@ -52,7 +52,8 @@ app.add_middleware(
 async def start_up():
     await init_db()
 
-app.include_router(router)
+app.include_router(auth.router)
+app.include_router(users.router,prefix=settings.API_V1_STR)
 @app.get("/")
 async def root():
     return {"message":"Course tracker backend running!"}

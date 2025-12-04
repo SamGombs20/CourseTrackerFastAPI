@@ -24,8 +24,10 @@ def get_current_user(token:str=Depends(oauth2_scheme))->str:
             )
         return token_data.sub
     except(JWTError,ValidationError):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate":"Bearer"}
-        )
+        
+        # raise HTTPException(
+        #     status_code=status.HTTP_403_FORBIDDEN,
+        #     detail="Could not validate the credentials",
+        #     headers={"WWW-Authenticate":"Bearer"}
+        # )
+        raise JWTError()

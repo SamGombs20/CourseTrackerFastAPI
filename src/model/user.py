@@ -1,5 +1,6 @@
 from typing import Optional
 from uuid import UUID, uuid4
+from pydantic import BaseModel
 from sqlmodel import SQLModel, Field
 from datetime import datetime
 
@@ -21,6 +22,9 @@ class User(UserBase, table=True):
     hashed_password: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+class UserLogIn(BaseModel):
+    username:str
+    password:str
 
 class UserCreate(SQLModel):
     firstName: str
