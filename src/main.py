@@ -6,6 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
+from auth.utils import get_password_hash
+from core.config import settings
+from routers.auth import router
 
 
 import uvicorn
@@ -19,7 +22,9 @@ from database import get_session, init_db
 #     await init_db()
 #     yield
 
-app = FastAPI()
+app = FastAPI(
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -47,6 +52,7 @@ app.add_middleware(
 async def start_up():
     await init_db()
 
+app.include_router(router)
 @app.get("/")
 async def root():
     return {"message":"Course tracker backend running!"}
@@ -120,7 +126,7 @@ async def create_user(user_in: UserCreate, session: AsyncSession = Depends(get_s
     if result.scalars().first():
         raise HTTPException(status_code=400, detail="Username already registered")
 
-    hashed_password = user_in.password + "_not_really_hashed"
+    hashed_password = get_password_hash(user_in.password)
     
     user = User(
         firstName=user_in.firstName,
