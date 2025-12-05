@@ -9,7 +9,7 @@ class Token(BaseModel):
 
 class TokenPayload(BaseModel):
     sub:Optional[str]=None
-    exp:Optional[str]=None
+    exp:Optional[int]=None
 
 class TokenData(BaseModel):
     username:Optional[str]=None

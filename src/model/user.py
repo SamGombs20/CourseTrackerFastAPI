@@ -31,7 +31,12 @@ class UserCreate(SQLModel):
     lastName: str
     username: str
     password: str
-
+class UserPublic(BaseModel):
+    id: UUID
+    firstName: str
+    lastName: str
+    username: str
+    created_at: datetime
 
 class UserRead(SQLModel):
     id: UUID

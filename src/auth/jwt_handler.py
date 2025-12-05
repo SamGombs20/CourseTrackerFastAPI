@@ -27,7 +27,8 @@ def create_refresh_token(subject:str):
     to_encode={
         "sub":str(subject),
         "exp":expire,
-        "iat":datetime.utcnow()
+        "iat":datetime.utcnow(),
+        "token_type":"refresh"
     }
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY,algorithm=settings.ALGORITHM)
     return encoded_jwt
