@@ -48,7 +48,6 @@ async def login_for_access_token(
 async def refresh_token(refresh_token:str= Body(...))->Any:
     try:
         payload = decode_token(refresh_token)
-        print("Payload:", payload)
         if "token_type" not in payload or payload["token_type"]!="refresh":
             raise HTTPException (
                 status_code=status.HTTP_403_FORBIDDEN,
