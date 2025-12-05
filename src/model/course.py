@@ -6,17 +6,12 @@ class CourseBase(SQLModel):
     name: str = Field(index=True)
     category: str = Field(index=True)
     description: str
-    status: str = Field(
-        default="",
-        description="Not Started | In Progress | Completed | ''"
-    )
+    status: Optional[str] = None
     startDate: Optional[str] = None
     endDate: Optional[str] = None
     rating: Optional[str] = None
 
 class Course(CourseBase, table=True):
-    __tablename__ = "courses"
-
     id: UUID = Field(
         default_factory=uuid4,
         primary_key=True,
