@@ -1,14 +1,15 @@
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID, uuid4
 from pydantic import BaseModel
-from sqlmodel import SQLModel, Field
+from sqlmodel import Relationship, SQLModel, Field
 from datetime import datetime
 
+from schema.link import UserCourseLink
+from schema.course import Course
+from schema.user import UserBase
 
-class UserBase(SQLModel):
-    firstName: str = Field(index=True)
-    lastName: str = Field(index=True)
-    username: str = Field(index=True, unique=True)
+
+
 
 
 class User(UserBase, table=True):
@@ -21,16 +22,14 @@ class User(UserBase, table=True):
     )
     hashed_password: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    courses:List["Course"] = Relationship(back_populates="users", link_model=UserCourseLink)
+
 
 class UserLogIn(BaseModel):
     username:str
     password:str
 
-class UserCreate(SQLModel):
-    firstName: str
-    lastName: str
-    username: str
-    password: str
+
 class UserPublic(BaseModel):
     id: UUID
     firstName: str
@@ -38,15 +37,3 @@ class UserPublic(BaseModel):
     username: str
     created_at: datetime
 
-class UserRead(SQLModel):
-    id: UUID
-    firstName: str
-    lastName: str
-    username: str
-    created_at: datetime
-
-
-class UserUpdate(SQLModel):
-    firstName: Optional[str] = None
-    lastName: Optional[str] = None
-    username: Optional[str] = None

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException,status
 from sqlmodel import select
 
+from model.user import User, UserPublic
 from database import get_session
 from auth.jwt_bearer import get_current_user
-from model.user import User, UserPublic
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 

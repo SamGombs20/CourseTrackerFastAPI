@@ -1,6 +1,8 @@
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID, uuid4
-from sqlmodel import SQLModel, Field
+from sqlmodel import Field, Relationship, SQLModel
+from schema import user, link
+
 
 class CourseBase(SQLModel):
     name: str = Field(index=True)
@@ -12,11 +14,13 @@ class CourseBase(SQLModel):
     rating: Optional[str] = None
 
 class Course(CourseBase, table=True):
+    __tablename__ = "courses"
     id: UUID = Field(
         default_factory=uuid4,
         primary_key=True,
         nullable=False
     )
+    users:List["user.User"] = Relationship(back_populates="courses", link_model=link.UserCourseLink)
 class CourseCreate(SQLModel):
     name: str
     category: str

@@ -6,9 +6,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 from jose import JWTError
 from pydantic import ValidationError
 from sqlmodel import select
-from auth.jwt_handler import create_access_token, create_refresh_token, decode_token
-from auth.utils import verify_password
+from schema.user import UserCreate, UserRead
 from model.user import User
+from auth.jwt_handler import create_access_token, create_refresh_token, decode_token
+from auth.utils import verify_password, get_password_hash
+
 from database import get_session
 from core.config import settings
 from model.token import Token
@@ -43,6 +45,28 @@ async def login_for_access_token(
         "refresh_token":refresh_token,
         "token_type":"bearer"
     }
+
+@router.post("/register", response_model=UserRead)
+async def register_user(user_in:UserCreate, session:AsyncSession = Depends(get_session)):
+    result = await session.execute(select(User).where(User.username == user_in.username))
+    user:User = result.scalars().first()
+    if user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already registered"
+        )
+    
+    hashed_password = get_password_hash(user_in.password)
+    new_user = User(
+        firstName = user_in.firstName,
+        lastName = user_in.lastName,
+        username = user_in.username,
+        hashed_password = hashed_password
+    )
+    session.add(new_user)
+    await session.commit()
+    await session.refresh(new_user)
+    return new_user
 
 @router.post("/refresh", response_model=Token)
 async def refresh_token(refresh_token:str= Body(...))->Any:
