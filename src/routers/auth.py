@@ -3,7 +3,7 @@ from typing import Any
 from fastapi import APIRouter, Body, HTTPException, status
 from fastapi.params import Depends
 from fastapi.security import OAuth2PasswordRequestForm
-from jose import JWTError
+from jose import JWSError, JWTError
 from pydantic import ValidationError
 from sqlmodel import select
 from schema.user import UserCreate, UserRead
@@ -95,7 +95,7 @@ async def refresh_token(refresh_token:str= Body(...))->Any:
             "refresh_token": new_refresh_token,
             "token_type": "bearer"
         }
-    except (JWTError, ValidationError):
+    except (JWTError, JWSError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
