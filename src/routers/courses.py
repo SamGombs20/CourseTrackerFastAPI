@@ -52,3 +52,41 @@ async def add_course(course_in:CourseCreate, current_user:str= Depends(get_curre
     await session.commit()
     await session.refresh(course)
     return course
+
+@router.put("/updateCourse/{course_id}", response_model=CourseRead)
+async def update_course(course_in:CourseRead, current_user:str= Depends(get_current_user),
+                        session:AsyncSession= Depends(get_session)):
+    user_result = await session.execute(
+        select(User).where(User.username==current_user)
+    )
+    user:User = user_result.scalars().first()
+    course_result = await session.execute(
+        select(Course).where(Course.id == course_in.id)
+    )
+    course:Course = course_result.scalars().first()
+    course.name = course_in.name
+    course.category = course_in.category
+    course.description = course_in.description
+    course.status = course_in.status
+    course.startDate = course_in.startDate
+    course.endDate = course_in.endDate
+    course.rating = course_in.rating
+    session.add(course)
+    await session.commit()
+    await session.refresh(course)
+    return course
+
+@router.delete("/deleteCourse/{course_id}")
+async def delete_course(course_id:str, current_user:str= Depends(get_current_user),
+                        session:AsyncSession = Depends(get_session)):
+    user_result = await session.execute(
+        select(User).where(User.username==current_user)
+    )
+    user:User = user_result.scalars().first()
+    course_result = await session.execute(
+        select(Course).where(Course.id == course_id)
+    )
+    course:Course = course_result.scalars().first()
+    await session.delete(course)
+    await session.commit()
+    return {"detail":"Course deleted successfully"}

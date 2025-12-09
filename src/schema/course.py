@@ -8,7 +8,8 @@ class CourseBase(SQLModel):
     name: str = Field(index=True)
     category: str = Field(index=True)
     description: str
-    status: Optional[str] = None
+    status: str = Field(default="",
+                        description="Not Started | In Progress | Completed| '")
     startDate: Optional[str] = None
     endDate: Optional[str] = None
     rating: Optional[str] = None
