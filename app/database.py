@@ -5,8 +5,12 @@ from sqlmodel import SQLModel
 
 from core.config import DATABASE_URL
 
+connect_args = {}
 
-engine = create_async_engine(DATABASE_URL, echo=False, future=True)
+if "neon.tech" in DATABASE_URL:
+    connect_args["ssl"] = True
+
+engine = create_async_engine(DATABASE_URL, echo=False, future=True, connect_args=connect_args)
 
 async def init_db():
     async with engine.begin() as conn:
